@@ -36,6 +36,32 @@ function translateArray(numArray)
 end
 
 
-res = inputToArray()
-print(translateArray(res))
+-- res = inputToArray()
+-- print(translateArray(res))
 
+-- Part 2
+
+function copyTable(tbl)
+  local newTable = {}
+  for k, v in ipairs(tbl) do
+    newTable[k] = v
+  end
+  return newTable
+end
+
+function findValue(endVal)
+  local metaTable = inputToArray()
+  for i=0, 99 do 
+    for j=0, 99 do
+      local tempArray = copyTable(metaTable)
+      tempArray[2] = i
+      tempArray[3] = j
+      if (translateArray(tempArray) == endVal) then
+        return { i, j }
+      end
+    end
+  end
+  return { -1, -1 }
+end
+
+printArray(findValue(19690720))
