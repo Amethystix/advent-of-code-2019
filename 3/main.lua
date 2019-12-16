@@ -3,6 +3,8 @@ function makeCoordinate(x, y, instructionString)
   local direction = string.sub(instructionString, 1, 1)
   local amount = tonumber(string.sub(instructionString, 2))
 
+  coordinate.steps = math.abs(amount)
+
   if (direction == 'R') then
     coordinate.x = amount + x
     coordinate.y = y
@@ -47,8 +49,7 @@ function printWires(wires)
   end
 end
 
--- Not finished yet
-function findIntersections(wires)
+function findShortestIntersection(wires)
   local shortestIntersection = math.huge
   local index1 = 1
   while (index1 < #wires[1]) do
@@ -76,7 +77,57 @@ function findIntersections(wires)
           end
         end
       end
+      index2 = index2 + 1
+    end
+    index1 = index1 + 1
+  end
+  return shortestIntersection
+end
 
+-- wires = inputToCoordinates()
+-- print(findIntersections(wires))
+
+-- Part 2
+function findFirstIntersection(wires)
+  local shortestIntersection = math.huge
+  local index1 = 1
+  local wire1Steps = 0
+  while (index1 < #wires[1]) do
+    local wire1Coordinate1 = wires[1][index1]
+    local wire1Coordinate2 = wires[1][index1 + 1]
+    wire1Steps = wire1Steps + wire1Coordinate1.steps
+
+    local index2 = 1
+    local wire2Steps = 0
+    while (index2 < #wires[2]) do
+      local wire2Coordinate1 = wires[2][index2]
+      local wire2Coordinate2 = wires[2][index2 + 1]
+      wire2Steps = wire2Steps + wire2Coordinate1.steps
+
+      if (wire2Coordinate1.y >= wire1Coordinate1.y and wire2Coordinate2.y <= wire1Coordinate2.y) or (wire2Coordinate1.y <= wire1Coordinate1.y and wire2Coordinate2.y >= wire1Coordinate2.y) then
+        if (wire2Coordinate1.x >= wire1Coordinate1.x and wire2Coordinate2.x <= wire1Coordinate2.x) or (wire2Coordinate1.x <= wire1Coordinate1.x and wire2Coordinate2.x >= wire1Coordinate2.x) then
+          local intersection = { x = 0, y = 0 }
+          local extraSteps = 0
+
+          if (wire1Coordinate1.y == wire1Coordinate2.y) then
+            intersection.y = wire1Coordinate1.y
+            intersection.x = wire2Coordinate1.x
+            local wire1 = math.abs(intersection.x - wire1Coordinate1.x)
+            local wire2 = math.abs(intersection.y - wire2Coordinate1.y)
+            extraSteps = wire1 + wire2
+          elseif (wire1Coordinate1.x == wire1Coordinate2.x) then
+            intersection.x = wire1Coordinate1.x
+            intersection.y = wire2Coordinate1.y
+            local wire2 = math.abs(intersection.x - wire2Coordinate1.x)
+            local wire1 = math.abs(intersection.y - wire1Coordinate1.y)
+            extraSteps = wire1 + wire2
+          end
+          local distance = wire1Steps + wire2Steps + extraSteps
+          if (distance < shortestIntersection) then
+            shortestIntersection = distance
+          end
+        end
+      end
       index2 = index2 + 1
     end
     index1 = index1 + 1
@@ -85,4 +136,4 @@ function findIntersections(wires)
 end
 
 wires = inputToCoordinates()
-print(findIntersections(wires))
+print(findFirstIntersection(wires))
