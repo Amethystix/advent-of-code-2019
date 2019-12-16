@@ -50,15 +50,36 @@ end
 -- Not finished yet
 function findIntersections(wires)
   local shortestIntersection = math.huge
-  for k1, coor1 in ipairs(wires[1]) do
-    for k2, coor2 in ipairs(wires[2]) do
-      if (coor1.x == coor2.x and coor1.y == coor2.y) then
-        local distance = math.abs(coor1.x) + math.abs(coor1.y)
-        if (distance < shortestIntersection) then
-          shortestIntersection = distance
+  local index1 = 1
+  while (index1 < #wires[1]) do
+    local wire1Coordinate1 = wires[1][index1]
+    local wire1Coordinate2 = wires[1][index1 + 1]
+
+    local index2 = 1
+    while (index2 < #wires[2]) do
+      local wire2Coordinate1 = wires[2][index2]
+      local wire2Coordinate2 = wires[2][index2 + 1]
+
+      if (wire2Coordinate1.y >= wire1Coordinate1.y and wire2Coordinate2.y <= wire1Coordinate2.y) or (wire2Coordinate1.y <= wire1Coordinate1.y and wire2Coordinate2.y >= wire1Coordinate2.y) then
+        if (wire2Coordinate1.x >= wire1Coordinate1.x and wire2Coordinate2.x <= wire1Coordinate2.x) or (wire2Coordinate1.x <= wire1Coordinate1.x and wire2Coordinate2.x >= wire1Coordinate2.x) then
+          local intersection = { x = 0, y = 0 }
+          if (wire1Coordinate1.y == wire1Coordinate2.y) then
+            intersection.y = wire1Coordinate1.y
+            intersection.x = wire2Coordinate1.x
+          elseif (wire1Coordinate1.x == wire1Coordinate2.x) then
+            intersection.x = wire1Coordinate1.x
+            intersection.y = wire2Coordinate1.y
+          end
+          local distance = math.abs(intersection.x) + math.abs(intersection.y)
+          if (distance < shortestIntersection) then
+            shortestIntersection = distance
+          end
         end
       end
+
+      index2 = index2 + 1
     end
+    index1 = index1 + 1
   end
   return shortestIntersection
 end
